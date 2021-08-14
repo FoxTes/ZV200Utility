@@ -1,0 +1,40 @@
+<UserControl
+    Height="106"
+    Width="324"
+    d:DesignHeight="300"
+    d:DesignWidth="300"
+    mc:Ignorable="d"
+    x:Class="ZV200Utility.Modules.StatusRelays.Views.NoConnectWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="http://schemas.modernwpf.com/2019"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid Margin="16">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="auto" />
+        </Grid.ColumnDefinitions>
+
+        <Border
+            Background="{DynamicResource SystemControlBackgroundChromeMediumBrush}"
+            CornerRadius="4"
+            Margin="0,0,16,0">
+            <TextBlock
+                HorizontalAlignment="Center"
+                Text="Пожалуйста, подключите устройство."
+                TextAlignment="Center"
+                TextWrapping="Wrap"
+                VerticalAlignment="Center" />
+        </Border>
+
+        <ui:SimpleStackPanel Grid.Column="1" Spacing="8">
+            <Button Command="{Binding SettingViewCommand}" ToolTip="Настройки">
+                <Button.Content>
+                    <ui:FontIcon Glyph="&#xE713;" />
+                </Button.Content>
+            </Button>
+        </ui:SimpleStackPanel>
+    </Grid>
+</UserControl>

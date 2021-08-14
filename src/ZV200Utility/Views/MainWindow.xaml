@@ -1,0 +1,24 @@
+﻿<Window
+    ContentRendered="Window_OnContentRendered"
+    ResizeMode="CanMinimize"
+    SizeToContent="WidthAndHeight"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d"
+    ui:TitleBar.ExtendViewIntoTitleBar="True"
+    ui:TitleBar.IsBackButtonVisible="True"
+    ui:TitleBar.IsBackEnabled="{Binding IsGoBack}"
+    ui:WindowHelper.UseModernWindowStyle="True"
+    x:Class="ZV200Utility.Views.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:core="clr-namespace:ZV200Utility.Core;assembly=ZV200Utility.Core"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:regions="http://prismlibrary.com/"
+    xmlns:ui="http://schemas.modernwpf.com/2019"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ui:TitleBar.BackRequested>OnBackRequested</ui:TitleBar.BackRequested>
+
+    <Grid>
+        <ContentControl Margin="0,32,0,0" regions:RegionManager.RegionName="{x:Static core:RegionNames.MainContent}" />
+    </Grid>
+</Window>

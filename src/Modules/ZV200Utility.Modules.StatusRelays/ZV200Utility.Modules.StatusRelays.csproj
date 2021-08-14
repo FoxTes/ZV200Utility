@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>ZV200Utility.Modules.StatusRelays</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>..\..\..\stylecop.ruleset</CodeAnalysisRuleSet>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Prism.Wpf" Version="8.1.97" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.354">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="ModernWpf, Version=0.9.4.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\..\..\..\Users\Georgy\.nuget\packages\modernwpfui\0.9.4\lib\netcoreapp3.0\ModernWpf.dll</HintPath>
+    </Reference>
+    <Reference Include="ModernWpf.Controls, Version=0.9.4.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\..\..\..\Users\Georgy\.nuget\packages\modernwpfui\0.9.4\lib\netcoreapp3.0\ModernWpf.Controls.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Services\ZV200Utility.Services.DeviceManager\ZV200Utility.Services.DeviceManager.csproj" />
+    <ProjectReference Include="..\..\ZV200Utility.Core\ZV200Utility.Core.csproj" />
+  </ItemGroup>
+</Project>
