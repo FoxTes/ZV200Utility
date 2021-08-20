@@ -93,7 +93,7 @@ namespace ZV200Utility.Services.DeviceManager
             };
             await _modbusSerialMaster.WriteMultipleRegistersAsync(
                 SettingModbus.AddressDevice,
-                (ushort)RegisterAddress.RelayFunction,
+                (ushort)RegisterAddress.SoundFunction,
                 dataWrite1);
 
             SettingDevice = settingDevice;
