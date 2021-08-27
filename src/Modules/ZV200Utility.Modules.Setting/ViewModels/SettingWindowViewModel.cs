@@ -12,6 +12,8 @@ using ZV200Utility.Core.Services;
 using ZV200Utility.Services.DeviceManager;
 using ZV200Utility.Services.DeviceManager.Model;
 using ZV200Utility.Services.Notification;
+using ZV200Utility.Services.SerialPortScanner;
+using ZV200Utility.Services.SerialPortScanner.Models;
 
 namespace ZV200Utility.Modules.Setting.ViewModels
 {
@@ -31,6 +33,7 @@ namespace ZV200Utility.Modules.Setting.ViewModels
         private string _serialPortSelected;
         private BaudRate _baudRateSelected;
 
+        private IEnumerable<string> _serialPortSource = SerialPort.GetPortNames();
         private RelayOperatingMode _relayFunctionSelected;
         private bool _relayLogicStatus;
         private bool _roundFunctionStatus;
@@ -40,19 +43,22 @@ namespace ZV200Utility.Modules.Setting.ViewModels
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="SettingWindowViewModel"/>.
         /// </summary>
+        /// <param name="serialPortScanner">Сканер портов.</param>
         /// <param name="navigationJournal">Журнал.</param>
         /// <param name="deviceManager">Менеджер прибора.</param>
         /// <param name="notification">Уведомления.</param>
         public SettingWindowViewModel(
+            ISerialPortScanner serialPortScanner,
             INavigationJournal navigationJournal,
             IDeviceManager deviceManager,
             INotification notification)
         {
             _navigationJournal = navigationJournal;
-            _deviceManager = deviceManager;
             _notification = notification;
-
+            _deviceManager = deviceManager;
             _deviceManager.StatusConnectChanged += OnDeviceManagerOnStatusConnectChanged;
+
+            serialPortScanner.SerialPortChanged += SerialPortScannerOnSerialPortChanged;
         }
 
         /// <summary>
@@ -74,7 +80,11 @@ namespace ZV200Utility.Modules.Setting.ViewModels
         /// <summary>
         /// Адреса устройств в сети MODBUS.
         /// </summary>
-        public IEnumerable<string> SerialPortSource { get; } = SerialPort.GetPortNames();
+        public IEnumerable<string> SerialPortSource
+        {
+            get => _serialPortSource;
+            private set => _isSettingChanged = SetProperty(ref _serialPortSource, value);
+        }
 
         /// <summary>
         /// Выбранный адрес устройства.
@@ -179,8 +189,12 @@ namespace ZV200Utility.Modules.Setting.ViewModels
         }
 
         private void OnDeviceManagerOnStatusConnectChanged(object sender, EventArgs args)
+            => StatusConnectDevice = _deviceManager.StatusConnect == StatusConnect.Connected;
+
+        private void SerialPortScannerOnSerialPortChanged(object sender, SerialPortArgs e)
         {
-            StatusConnectDevice = _deviceManager.StatusConnect == StatusConnect.Connected;
+            SerialPortSource = e.SerialPorts;
+            SerialPortSelected = SerialPortSource.FirstOrDefault();
         }
 
         private void SetDefaultValue()

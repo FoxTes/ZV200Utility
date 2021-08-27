@@ -1,6 +1,8 @@
 <UserControl
     Height="106"
     Width="324"
+    d:DataContext="{d:DesignInstance Type=viewModels:NoConnectWindowViewModel,
+                                     IsDesignTimeCreatable=True}"
     d:DesignHeight="300"
     d:DesignWidth="300"
     mc:Ignorable="d"
@@ -9,6 +11,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.modernwpf.com/2019"
+    xmlns:viewModels="clr-namespace:ZV200Utility.Modules.StatusRelays.ViewModels"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Grid Margin="16">

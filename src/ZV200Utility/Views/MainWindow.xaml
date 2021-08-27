@@ -3,6 +3,8 @@
     ResizeMode="CanMinimize"
     SizeToContent="WidthAndHeight"
     WindowStartupLocation="CenterScreen"
+    d:DataContext="{d:DesignInstance Type=viewModels:MainWindowViewModel,
+                                     IsDesignTimeCreatable=True}"
     mc:Ignorable="d"
     ui:TitleBar.ExtendViewIntoTitleBar="True"
     ui:TitleBar.IsBackButtonVisible="True"
@@ -15,6 +17,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:regions="http://prismlibrary.com/"
     xmlns:ui="http://schemas.modernwpf.com/2019"
+    xmlns:viewModels="clr-namespace:ZV200Utility.ViewModels"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <ui:TitleBar.BackRequested>OnBackRequested</ui:TitleBar.BackRequested>
 

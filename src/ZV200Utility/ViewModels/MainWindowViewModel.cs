@@ -60,13 +60,13 @@ namespace ZV200Utility.ViewModels
         {
             if (_deviceManager.StatusConnect != StatusConnect.Disconnected)
                 return;
-
-            _navigationJournal.RegionNavigationJournal = new RegionNavigationJournal();
-            _navigationJournal.UpdateNavigationJournal();
-
+            
             Application.Current.Dispatcher.BeginInvoke(
                 () => { _regionManager.RequestNavigate(RegionNames.MainContent, "StatusRelaysWindow"); },
                 DispatcherPriority.Background);
+
+            _navigationJournal.RegionNavigationJournal = new RegionNavigationJournal();
+            _navigationJournal.UpdateNavigationJournal();
         }
 
         private void OnNavigationJournalOnRegionChanged(object sender, EventArgs args)

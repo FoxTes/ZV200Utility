@@ -194,8 +194,8 @@ namespace ZV200Utility.Services.DeviceManager
 
             _serialPortAdapter = new SerialPortAdapter(_serialPort)
             {
-                ReadTimeout = 1000,
-                WriteTimeout = 1000
+                ReadTimeout = 500,
+                WriteTimeout = 500
             };
             _modbusSerialMaster = _modbusFactory.CreateRtuMaster(_serialPortAdapter);
 
@@ -226,13 +226,11 @@ namespace ZV200Utility.Services.DeviceManager
 
             var readRegisterSetting1 = await _modbusSerialMaster.ReadHoldingRegistersAsync(
                 SettingModbus.AddressDevice,
-                (ushort)RegisterAddress.RelayFunction,
+                (ushort)RegisterAddress.SoundFunction,
                 2);
 
             SettingDevice = new SettingDeviceArgs(
-                FastEnum
-                    .GetValues<RelayOperatingMode>()
-                    .FirstOrDefault(x => x == (RelayOperatingMode)readRegisterSetting[0]),
+                (RelayOperatingMode)readRegisterSetting[0],
                 readRegisterSetting[1] != 0,
                 readRegisterSetting1[0] != 0,
                 readRegisterSetting1[1] != 0);

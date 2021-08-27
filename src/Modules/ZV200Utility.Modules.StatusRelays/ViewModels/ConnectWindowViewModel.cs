@@ -43,6 +43,7 @@ namespace ZV200Utility.Modules.StatusRelays.ViewModels
             _regionManager = regionManager;
             deviceManager.RegistersRequested += OnDeviceManagerOnRegistersRequested;
             BindingOperations.EnableCollectionSynchronization(Phases, Lock);
+            BindingOperations.EnableCollectionSynchronization(Elements, Lock);
 
             SettingViewCommand = new DelegateCommand(SettingViewSubmit);
         }
