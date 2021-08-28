@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Threading;
+using Prism.Commands;
 using Prism.Regions;
 using ZV200Utility.Core;
 using ZV200Utility.Core.Enums;
@@ -35,10 +36,17 @@ namespace ZV200Utility.ViewModels
             _navigationJournal = navigationJournal;
             _navigationJournal.RegionChanged += OnNavigationJournalOnRegionChanged;
 
-            _deviceManager = deviceManager;
             _regionManager = regionManager;
+            _deviceManager = deviceManager;
             _deviceManager.StatusConnectChanged += OnDeviceManagerOnStatusConnectChanged;
+
+            GoBackCommand = new DelegateCommand(GoBackSubmit);
         }
+
+        /// <summary>
+        /// Команда возврата страницы.
+        /// </summary>
+        public DelegateCommand GoBackCommand { get; }
 
         /// <summary>
         /// Флаг, указывающий на возможность обратной навигации.
@@ -60,12 +68,18 @@ namespace ZV200Utility.ViewModels
         {
             if (_deviceManager.StatusConnect != StatusConnect.Disconnected)
                 return;
-            
+
             Application.Current.Dispatcher.BeginInvoke(
                 () => { _regionManager.RequestNavigate(RegionNames.MainContent, "StatusRelaysWindow"); },
                 DispatcherPriority.Background);
 
-            _navigationJournal.RegionNavigationJournal = new RegionNavigationJournal();
+            _navigationJournal.RegionNavigationJournal.Clear();
+            _navigationJournal.UpdateNavigationJournal();
+        }
+
+        private void GoBackSubmit()
+        {
+            _navigationJournal.RegionNavigationJournal.GoBack();
             _navigationJournal.UpdateNavigationJournal();
         }
 

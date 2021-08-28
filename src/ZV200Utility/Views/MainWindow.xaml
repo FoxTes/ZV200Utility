@@ -6,6 +6,7 @@
     d:DataContext="{d:DesignInstance Type=viewModels:MainWindowViewModel,
                                      IsDesignTimeCreatable=True}"
     mc:Ignorable="d"
+    ui:TitleBar.BackButtonCommand="{Binding GoBackCommand}"
     ui:TitleBar.ExtendViewIntoTitleBar="True"
     ui:TitleBar.IsBackButtonVisible="True"
     ui:TitleBar.IsBackEnabled="{Binding IsGoBack}"
@@ -19,7 +20,6 @@
     xmlns:ui="http://schemas.modernwpf.com/2019"
     xmlns:viewModels="clr-namespace:ZV200Utility.ViewModels"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <ui:TitleBar.BackRequested>OnBackRequested</ui:TitleBar.BackRequested>
 
     <Grid>
         <ContentControl Margin="0,32,0,0" regions:RegionManager.RegionName="{x:Static core:RegionNames.MainContent}" />
