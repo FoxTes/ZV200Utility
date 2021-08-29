@@ -25,9 +25,9 @@ namespace ZV200Utility.ViewModels
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="MainWindowViewModel"/>.
         /// </summary>
-        /// <param name="navigationJournal">Журнал.</param>
-        /// <param name="deviceManager">2</param>
-        /// <param name="regionManager">3</param>
+        /// <param name="navigationJournal">Журнал навигации.</param>
+        /// <param name="deviceManager">Менеджер прибора.</param>
+        /// <param name="regionManager">Менеджер регионов.</param>
         public MainWindowViewModel(
             INavigationJournal navigationJournal,
             IDeviceManager deviceManager,
@@ -83,9 +83,7 @@ namespace ZV200Utility.ViewModels
             _navigationJournal.UpdateNavigationJournal();
         }
 
-        private void OnNavigationJournalOnRegionChanged(object sender, EventArgs args)
-        {
-            IsGoBack = _navigationJournal.RegionNavigationJournal.CanGoBack;
-        }
+        private void OnNavigationJournalOnRegionChanged(object sender, EventArgs args) 
+            => IsGoBack = _navigationJournal.RegionNavigationJournal.CanGoBack;
     }
 }

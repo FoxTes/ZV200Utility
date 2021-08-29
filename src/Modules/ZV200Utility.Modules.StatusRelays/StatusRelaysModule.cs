@@ -1,12 +1,9 @@
-﻿using System;
-using Prism.Ioc;
+﻿using Prism.Ioc;
 using Prism.Modularity;
 using Prism.Regions;
 using ZV200Utility.Core;
-using ZV200Utility.Core.Enums;
 using ZV200Utility.Modules.StatusRelays.ViewModels;
 using ZV200Utility.Modules.StatusRelays.Views;
-using ZV200Utility.Services.DeviceManager;
 
 namespace ZV200Utility.Modules.StatusRelays
 {

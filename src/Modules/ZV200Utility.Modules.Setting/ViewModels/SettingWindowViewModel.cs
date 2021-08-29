@@ -182,6 +182,14 @@ namespace ZV200Utility.Modules.Setting.ViewModels
         {
             if (!_isSettingChanged)
                 return;
+            if (StatusConnectDevice)
+            {
+                await _notification.ShowAsync(
+                    "Настройки",
+                    "Настройки не были сохранены, т.к. установлено соединение пробором",
+                    NotificationType.Warning);
+                return;
+            }
 
             UpdateAppSettings();
             UpdateSettings();

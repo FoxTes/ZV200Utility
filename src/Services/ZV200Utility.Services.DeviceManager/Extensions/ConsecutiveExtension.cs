@@ -32,7 +32,7 @@ namespace ZV200Utility.Services.DeviceManager.Extensions
         /// </summary>
         /// <param name="source">Последовательность чисел.</param>
         /// <returns>Кортеж, с начальным числом группы и её длинной.</returns>
-        public static IEnumerable<(int First, int Count)> ConsecutiveRanges(this IPoolingEnumerable<int> source)
+        public static IEnumerable<(ushort First, ushort Count)> ConsecutiveRanges(this IPoolingEnumerable<ushort> source)
         {
             using var e = source.GetEnumerator();
 
@@ -40,10 +40,10 @@ namespace ZV200Utility.Services.DeviceManager.Extensions
             {
                 if (e.Current == 0)
                     break;
-                int first = e.Current, last = first, next;
+                ushort first = e.Current, last = first, next;
                 while ((more = e.MoveNext()) && (next = e.Current) > last && next - last == 1)
                     last = next;
-                yield return (first, last - first + 1);
+                yield return (first, (ushort)(last - first + 1));
             }
         }
     }

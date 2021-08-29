@@ -11,6 +11,7 @@ using NModbus;
 using NModbus.Serial;
 using Notifications.Wpf.Core;
 using ZV200Utility.Core.Enums;
+using ZV200Utility.Services.DeviceManager.Extensions;
 using ZV200Utility.Services.DeviceManager.Helpers;
 using ZV200Utility.Services.DeviceManager.Model;
 using ZV200Utility.Services.Notification;
@@ -76,45 +77,37 @@ namespace ZV200Utility.Services.DeviceManager
         /// <inheritdoc />
         public async Task SetSettingDevice(SettingDeviceArgs settingDevice)
         {
-            var dataWrite = new[]
-            {
-                (ushort)settingDevice.RelayFunction,
-                Convert.ToUInt16(settingDevice.RelayLogic),
-            };
+            var buffer = new ushort[2];
+
+            buffer[0] = (ushort)settingDevice.RelayFunction;
+            buffer[1] = Convert.ToUInt16(settingDevice.RelayLogic);
+
             await _modbusSerialMaster.WriteMultipleRegistersAsync(
                 SettingModbus.AddressDevice,
                 (ushort)RegisterAddress.RelayFunction,
-                dataWrite);
+                buffer);
 
-            var dataWrite1 = new[]
-            {
-                Convert.ToUInt16(settingDevice.SoundFunction),
-                Convert.ToUInt16(settingDevice.InputDiscreteLogic)
-            };
+            buffer[0] = Convert.ToUInt16(settingDevice.SoundFunction);
+            buffer[1] = Convert.ToUInt16(settingDevice.InputDiscreteLogic);
+
             await _modbusSerialMaster.WriteMultipleRegistersAsync(
                 SettingModbus.AddressDevice,
                 (ushort)RegisterAddress.SoundFunction,
-                dataWrite1);
+                buffer);
 
             SettingDevice = settingDevice;
         }
 
         private async void OnTimer(object state)
         {
-            var readRegisterStatusBus = new ushort[3];
-            var readRegisterStatusOther = new ushort[2];
+            var buffer = new ushort[6];
+            var isSuccess = false;
 
             try
             {
-                readRegisterStatusBus = await _modbusSerialMaster.ReadHoldingRegistersAsync(
-                    SettingModbus.AddressDevice,
-                    (ushort)RegisterAddress.BusA,
-                    3);
-
-                readRegisterStatusOther = await _modbusSerialMaster.ReadHoldingRegistersAsync(
-                    SettingModbus.AddressDevice,
-                    (ushort)RegisterAddress.RelayStatus,
-                    2);
+                buffer = await _modbusSerialMaster.ReadHoldingRegisterRanges(
+                    SettingModbus.AddressDevice, RegisterAddress.BusA, RegisterAddress.InputDiscreteStatus);
+                isSuccess = true;
             }
             catch (TimeoutException)
             {
@@ -122,6 +115,14 @@ namespace ZV200Utility.Services.DeviceManager
                 await _notification.ShowAsync(
                     "Подключение",
                     "Устройство не отвечает на чтение регистров.",
+                    NotificationType.Warning);
+            }
+            catch (InvalidOperationException)
+            {
+                Close();
+                await _notification.ShowAsync(
+                    "Подключение",
+                    $"Не удалось установить соединение с прибором.\nПорт {SettingModbus.SerialPort} был закрыт.",
                     NotificationType.Warning);
             }
             catch (Exception ex)
@@ -133,8 +134,10 @@ namespace ZV200Utility.Services.DeviceManager
                     NotificationType.Warning);
             }
 
-            var argsList = readRegisterStatusBus
-                .Concat(readRegisterStatusOther)
+            if (!isSuccess)
+                return;
+
+            var argsList = buffer
                 .Select((x, index) => new SensorInfoArgs(index, x != 0))
                 .ToList();
             RegistersRequested?.Invoke(this, argsList);
@@ -219,21 +222,14 @@ namespace ZV200Utility.Services.DeviceManager
 
         private async Task GetSettingDevice()
         {
-            var readRegisterSetting = await _modbusSerialMaster.ReadHoldingRegistersAsync(
-                SettingModbus.AddressDevice,
-                (ushort)RegisterAddress.RelayFunction,
-                2);
-
-            var readRegisterSetting1 = await _modbusSerialMaster.ReadHoldingRegistersAsync(
-                SettingModbus.AddressDevice,
-                (ushort)RegisterAddress.SoundFunction,
-                2);
+            var buffer = await _modbusSerialMaster.ReadHoldingRegisterRanges(
+                SettingModbus.AddressDevice, RegisterAddress.RelayFunction, RegisterAddress.InputDiscreteLogic);
 
             SettingDevice = new SettingDeviceArgs(
-                (RelayOperatingMode)readRegisterSetting[0],
-                readRegisterSetting[1] != 0,
-                readRegisterSetting1[0] != 0,
-                readRegisterSetting1[1] != 0);
+                (RelayOperatingMode)buffer[0],
+                buffer[1] != 0,
+                buffer[2] != 0,
+                buffer[3] != 0);
         }
 
         private void StartTimer()

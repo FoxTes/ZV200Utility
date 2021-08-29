@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Windows;
+using Microsoft.AppCenter;
+using Microsoft.AppCenter.Analytics;
+using Microsoft.AppCenter.Crashes;
 using Microsoft.Extensions.Configuration;
 using Prism.Ioc;
 using Prism.Modularity;
@@ -30,6 +34,17 @@ namespace ZV200Utility
         }
 
         /// <inheritdoc />
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            SetCountryCode();
+            AppCenter.Start("3d9569f9-aaaf-4212-994b-c70302679230",
+                typeof(Analytics),
+                typeof(Crashes));
+
+            base.OnStartup(e);
+        }
+
+        /// <inheritdoc />
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
             AddConfiguration(containerRegistry);
@@ -38,13 +53,8 @@ namespace ZV200Utility
             containerRegistry.RegisterSingleton<INavigationJournal, NavigationJournal>();
             containerRegistry.RegisterSingleton<INotification, Notification>();
 
-#if DEBUG
-            containerRegistry.RegisterSingleton<ISerialPortScanner, SerialPortScannerTest>();
-            containerRegistry.RegisterSingleton<IDeviceManager, DeviceManagerTest>();
-#else
             containerRegistry.RegisterSingleton<ISerialPortScanner, SerialPortScanner>();
             containerRegistry.RegisterSingleton<IDeviceManager, DeviceManager>();
-#endif
         }
 
         /// <inheritdoc />
@@ -78,6 +88,12 @@ namespace ZV200Utility
                 .CreateLogger();
             var appLogger = new SerilogLoggerProvider(serilogLogger).CreateLogger("App");
             containerRegistry.RegisterInstance(appLogger);
+        }
+
+        private static void SetCountryCode()
+        {
+            var countryCode = RegionInfo.CurrentRegion.TwoLetterISORegionName;
+            AppCenter.SetCountryCode(countryCode);
         }
     }
 }

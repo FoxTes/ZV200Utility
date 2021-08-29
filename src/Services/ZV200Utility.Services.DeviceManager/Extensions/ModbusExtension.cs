@@ -17,24 +17,26 @@ namespace ZV200Utility.Services.DeviceManager.Extensions
         /// Асинхронно читает разделенные на группы регистры хранения.
         /// </summary>
         /// <param name="modbusSerialMaster"><see cref="IModbusSerialMaster"/>.</param>
+        /// <param name="slaveAddress">Адрес устройства.</param>
         /// <param name="startIndex">Стартовый регистр.</param>
         /// <param name="stopIndex">Конечный регистр.</param>
         /// <returns></returns>
-        public static async Task<ReadOnlyMemory<int>> ReadHoldingRegisterRanges(
+        public static async Task<ushort[]> ReadHoldingRegisterRanges(
             this IModbusSerialMaster modbusSerialMaster,
+            byte slaveAddress,
             RegisterAddress startIndex,
             RegisterAddress stopIndex)
         {
             var values = FastEnum.GetValues<RegisterAddress>();
             var countValues = values.Count;
 
-            var samePool = ArrayPool<int>.Shared;
+            var samePool = ArrayPool<ushort>.Shared;
             var buffer = samePool.Rent(countValues);
 
             var y = 0;
             for (var i = 0; i < countValues; i++)
             {
-                var value = (int)values[i];
+                var value = (ushort)values[i];
                 if (value >= (int)startIndex && value <= (int)stopIndex)
                     buffer[y++] = value;
             }
@@ -49,15 +51,15 @@ namespace ZV200Utility.Services.DeviceManager.Extensions
             foreach (var (first, count) in consecutiveRanges)
             {
                 var registers = await modbusSerialMaster
-                    .ReadHoldingRegistersAsync(1, (ushort)first, (ushort)count)
+                    .ReadHoldingRegistersAsync(slaveAddress, first, count)
                     .ConfigureAwait(false);
                 foreach (var register in registers)
                     readRegistersBuffer[z++] = register;
             }
 
-            var spanArray = new ReadOnlyMemory<int>(readRegistersBuffer, 0, z);
+            var spanArray = new ReadOnlyMemory<ushort>(readRegistersBuffer, 0, z);
             samePool.Return(readRegistersBuffer);
-            return spanArray;
+            return spanArray.ToArray();
         }
     }
 }

@@ -81,7 +81,7 @@ namespace ZV200Utility.Modules.StatusRelays.ViewModels
             Phases.AddRange(dataSensor.GetRange(0, 3));
 
             _elements.Clear();
-            Elements.AddRange(dataSensor.GetRange(3, 2));
+            Elements.AddRange(dataSensor.GetRange(4, 2));
         }
 
         private void SettingViewSubmit()

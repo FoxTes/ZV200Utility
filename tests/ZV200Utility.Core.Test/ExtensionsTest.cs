@@ -12,20 +12,20 @@ namespace ZV200Utility.Core.Test
     public class ExtensionsTest
     {
         [Theory]
-        [InlineData(RegisterAddress.BusA, RegisterAddress.BusC, new[] {0, 1, 2} )]
-        [InlineData(RegisterAddress.RelayFunction, RegisterAddress.InputDiscreteLogic, new[] {0, 1, 0, 1} )]
-        [InlineData(RegisterAddress.BusA, RegisterAddress.Version, new[] {0, 1, 2, 3, 0, 1, 0} )]
+        [InlineData(RegisterAddress.BusA, RegisterAddress.BusC, new ushort[] {0, 1, 2} )]
+        [InlineData(RegisterAddress.RelayFunction, RegisterAddress.InputDiscreteLogic, new ushort[] {0, 1, 0, 1} )]
+        [InlineData(RegisterAddress.BusA, RegisterAddress.Version, new ushort[] {0, 1, 2, 3, 0, 1, 0} )]
         public async void ModbusExtensionTest(
             RegisterAddress startRegister, 
             RegisterAddress stopRegister,
-            int[] outArray)
+            ushort[] outArray)
         {
             var mock = new Mock<IModbusSerialMaster>();
             mock.Setup(x => x.ReadHoldingRegistersAsync(It.IsAny<byte>(), It.IsAny<ushort>(), It.IsAny<ushort>()))
                 .Returns((byte slaveAddress, ushort startAddress, ushort count) 
                     => Task.FromResult(Enumerable.Range(0, count).Select(x => (ushort)x).ToArray()));
 
-            var result = await mock.Object.ReadHoldingRegisterRanges(startRegister, stopRegister);
+            var result = await mock.Object.ReadHoldingRegisterRanges(1, startRegister, stopRegister);
             result.ToArray().Length.Should().Be(outArray.Length);
             result.ToArray().Should().Equal(outArray);
         }
