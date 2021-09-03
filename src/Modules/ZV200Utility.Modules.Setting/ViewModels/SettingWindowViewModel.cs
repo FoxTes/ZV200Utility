@@ -40,6 +40,7 @@ namespace ZV200Utility.Modules.Setting.ViewModels
         private bool _roundFunctionStatus;
         private bool _inputDiscreteLogicStatus;
         private bool _statusConnect;
+        private int _selectedIndexTab;
 
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="SettingWindowViewModel"/>.
@@ -179,6 +180,15 @@ namespace ZV200Utility.Modules.Setting.ViewModels
             set => SetProperty(ref _statusConnect, value);
         }
 
+        /// <summary>
+        /// Статус соединения с прибором.
+        /// </summary>
+        public int SelectedIndexTab
+        {
+            get => _selectedIndexTab;
+            set => SetProperty(ref _selectedIndexTab, value);
+        }
+
         /// <inheritdoc />
         public override void OnNavigatedTo(NavigationContext navigationContext)
         {
@@ -189,6 +199,8 @@ namespace ZV200Utility.Modules.Setting.ViewModels
             SetDefaultValue();
             _isSettingChanged = false;
             _isSettingDeviceChanged = true;
+
+            StatusConnectDevice = _deviceManager.StatusConnect == StatusConnect.Connected;
         }
 
         /// <inheritdoc />
@@ -211,7 +223,10 @@ namespace ZV200Utility.Modules.Setting.ViewModels
         }
 
         private void OnDeviceManagerOnStatusConnectChanged(object sender, EventArgs args)
-            => StatusConnectDevice = _deviceManager.StatusConnect == StatusConnect.Connected;
+        {
+            SelectedIndexTab = default;
+            StatusConnectDevice = _deviceManager.StatusConnect == StatusConnect.Connected;
+        }
 
         private void SerialPortScannerOnSerialPortChanged(object sender, SerialPortArgs e)
         {
