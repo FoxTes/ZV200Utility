@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Runtime.Serialization;
+using FastEnumUtility;
 using ZV200Utility.Core.Converters;
 
 namespace ZV200Utility.Core.Enums
@@ -13,57 +14,57 @@ namespace ZV200Utility.Core.Enums
         /// <summary>
         /// Не определена.
         /// </summary>
-        [Description("Нет")]
-        [EnumMember(Value = "НЕТ")]
+        [Label("НEТ")]
+        [EnumMember(Value = "Описание режима НЕТ.")]
         Disable,
 
         /// <summary>
         /// Сигнализация исправности модуля.
         /// </summary>
-        [Description("Режим1")]
-        [EnumMember(Value = "НЕТ")]
+        [Label("Режим1")]
+        [EnumMember(Value = "Описание режима номер 1.")]
         Work1,
 
         /// <summary>
         /// Сигнализация присутствия напряжения хотя бы на одной фазе.
         /// </summary>
-        [Description("Режим2")]
-        [EnumMember(Value = "НЕТ")]
+        [Label("Режим2")]
+        [EnumMember(Value = "Описание режима номер 2.")]
         Work2,
 
         /// <summary>
         /// Сигнализация присутствия напряжения на любых двух фазах.
         /// </summary>
-        [Description("Режим3")]
-        [EnumMember(Value = "НЕТ")]
+        [Label("Режим3")]
+        [EnumMember(Value = "Описание режима номер 3.")]
         Work3,
 
         /// <summary>
         /// Сигнализация присутствия напряжения на трех фазах.
         /// </summary>
-        [Description("Режим4")]
-        [EnumMember(Value = "НЕТ")]
+        [Label("Режим4")]
+        [EnumMember(Value = "Описание режима номер 4.")]
         Work4,
 
         /// <summary>
         /// Сигнализация отсутствия напряжения хотя бы на одной фазе.
         /// </summary>
-        [Description("Режим5")]
-        [EnumMember(Value = "НЕТ")]
+        [Label("Режим5")]
+        [EnumMember(Value = "Описание режима номер 5.")]
         Work5,
 
         /// <summary>
         /// Сигнализация отсутствия напряжения на любых двух фазах.
         /// </summary>
-        [Description("Режим6")]
-        [EnumMember(Value = "НЕТ")]
+        [Label("Режим6")]
+        [EnumMember(Value = "Описание режима номер 6.")]
         Work6,
 
         /// <summary>
         /// Сигнализация отсутствия напряжения на трех фазах.
         /// </summary>
-        [Description("Режим7")]
-        [EnumMember(Value = "НЕТ")]
+        [Label("Режим7")]
+        [EnumMember(Value = "Описание режима номер 7.")]
         Work7
     }
 }

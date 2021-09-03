@@ -145,7 +145,7 @@
                                 Orientation="Horizontal"
                                 Spacing="16">
                                 <Label
-                                    Content="Дискретный выход"
+                                    Content="Дискретный вход"
                                     ContentStringFormat="{}{0}:"
                                     VerticalAlignment="Center" />
 

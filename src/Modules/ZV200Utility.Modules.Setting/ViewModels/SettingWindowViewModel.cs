@@ -9,6 +9,7 @@ using ZV200Utility.Core.Enums;
 using ZV200Utility.Core.Helpers;
 using ZV200Utility.Core.Mvvm;
 using ZV200Utility.Core.Services;
+using ZV200Utility.Modules.Setting.Models;
 using ZV200Utility.Services.DeviceManager;
 using ZV200Utility.Services.DeviceManager.Model;
 using ZV200Utility.Services.Notification;
@@ -34,7 +35,7 @@ namespace ZV200Utility.Modules.Setting.ViewModels
         private BaudRate _baudRateSelected;
 
         private IEnumerable<string> _serialPortSource = SerialPort.GetPortNames();
-        private RelayOperatingMode _relayFunctionSelected;
+        private RelayOperatingItem _relayFunctionSelected;
         private bool _relayLogicStatus;
         private bool _roundFunctionStatus;
         private bool _inputDiscreteLogicStatus;
@@ -78,7 +79,7 @@ namespace ZV200Utility.Modules.Setting.ViewModels
         }
 
         /// <summary>
-        /// Адреса устройств в сети MODBUS.
+        /// Доступные COM порты.
         /// </summary>
         public IEnumerable<string> SerialPortSource
         {
@@ -87,7 +88,7 @@ namespace ZV200Utility.Modules.Setting.ViewModels
         }
 
         /// <summary>
-        /// Выбранный адрес устройства.
+        /// Выбранный COM порт.
         /// </summary>
         public string SerialPortSelected
         {
@@ -96,7 +97,7 @@ namespace ZV200Utility.Modules.Setting.ViewModels
         }
 
         /// <summary>
-        /// Выбранный адрес устройства.
+        /// Выбранная скорость прибора.
         /// </summary>
         public BaudRate BaudRateSelected
         {
@@ -105,9 +106,22 @@ namespace ZV200Utility.Modules.Setting.ViewModels
         }
 
         /// <summary>
-        /// Функция реле.
+        /// Доступные функции реле.
         /// </summary>
-        public RelayOperatingMode RelayFunctionSelected
+        public IReadOnlyList<RelayOperatingItem> RelayFunctionSource => FastEnum
+                .GetValues<RelayOperatingMode>()
+                .Select(x => new RelayOperatingItem
+                {
+                    Name = x.GetLabel(),
+                    ToolTipItem = x.GetEnumMemberValue(),
+                    RelayOperatingMode = x
+                })
+                .ToList();
+
+        /// <summary>
+        /// Выбранная функция реле.
+        /// </summary>
+        public RelayOperatingItem RelayFunctionSelected
         {
             get => _relayFunctionSelected;
             set
@@ -211,7 +225,8 @@ namespace ZV200Utility.Modules.Setting.ViewModels
             SerialPortSelected = _deviceManager.SettingModbus.SerialPort;
             BaudRateSelected = _deviceManager.SettingModbus.BaudRate;
 
-            RelayFunctionSelected = _deviceManager.SettingDevice.RelayFunction;
+            RelayFunctionSelected = RelayFunctionSource
+                .FirstOrDefault(x => x.RelayOperatingMode == _deviceManager.SettingDevice.RelayFunction);
             RelayLogicStatus = _deviceManager.SettingDevice.RelayLogic;
             SoundFunctionStatus = _deviceManager.SettingDevice.SoundFunction;
             InputDiscreteLogicStatus = _deviceManager.SettingDevice.InputDiscreteLogic;
@@ -237,7 +252,7 @@ namespace ZV200Utility.Modules.Setting.ViewModels
             try
             {
                 await _deviceManager.SetSettingDevice(new SettingDeviceArgs(
-                    RelayFunctionSelected,
+                    RelayFunctionSelected.RelayOperatingMode,
                     RelayLogicStatus,
                     SoundFunctionStatus,
                     InputDiscreteLogicStatus));

@@ -95,7 +95,7 @@ namespace ZV200Utility.Services.DeviceManager
             }
 
             var argsList = Enumerable
-                .Range(0, 5)
+                .Range(0, 6)
                 .Select((x, index) => new SensorInfoArgs(index, x != 0))
                 .ToList();
             RegistersRequested?.Invoke(this, argsList);
