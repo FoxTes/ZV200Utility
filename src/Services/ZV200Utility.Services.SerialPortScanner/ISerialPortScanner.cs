@@ -14,6 +14,11 @@ namespace ZV200Utility.Services.SerialPortScanner
         event EventHandler<SerialPortArgs> SerialPortChanged;
 
         /// <summary>
+        /// Периодический вызов принудительного подключения к порту.
+        /// </summary>
+        event EventHandler<string[]> SerialPortPolled;
+
+        /// <summary>
         /// Запускает сканирование.
         /// </summary>
         void Start();

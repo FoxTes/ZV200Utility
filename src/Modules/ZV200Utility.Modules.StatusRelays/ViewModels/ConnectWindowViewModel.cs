@@ -21,18 +21,6 @@ namespace ZV200Utility.Modules.StatusRelays.ViewModels
 
         private readonly IRegionManager _regionManager;
 
-        private ObservableCollection<Phase> _phases = new ObservableCollection<Phase>
-        {
-            new Phase(false),
-            new Phase(false),
-            new Phase(false),
-        };
-        private ObservableCollection<Phase> _elements = new ObservableCollection<Phase>
-        {
-            new Phase(false),
-            new Phase(false),
-        };
-
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="ConnectWindowViewModel"/>.
         /// </summary>
@@ -51,20 +39,21 @@ namespace ZV200Utility.Modules.StatusRelays.ViewModels
         /// <summary>
         /// Группа реле.
         /// </summary>
-        public ObservableCollection<Phase> Phases
+        public ObservableCollection<Phase> Phases { get; } = new ObservableCollection<Phase>
         {
-            get => _phases;
-            set => SetProperty(ref _phases, value);
-        }
+            new Phase(false),
+            new Phase(false),
+            new Phase(false),
+        };
 
         /// <summary>
         /// Группа реле.
         /// </summary>
-        public ObservableCollection<Phase> Elements
+        public ObservableCollection<Phase> Elements { get; } = new ObservableCollection<Phase>
         {
-            get => _elements;
-            set => SetProperty(ref _elements, value);
-        }
+            new Phase(false),
+            new Phase(false),
+        };
 
         /// <summary>
         /// Команда переключения представления на настройки.
@@ -77,11 +66,13 @@ namespace ZV200Utility.Modules.StatusRelays.ViewModels
                 .Select(x => new Phase(x.Status))
                 .ToList();
 
-            _phases.Clear();
-            Phases.AddRange(dataSensor.GetRange(0, 3));
+            var selectRange = dataSensor.GetRange(0, 3);
+            for (var i = 0; i < selectRange.Count; i++)
+                Phases[i] = new Phase(selectRange[i].Status);
 
-            _elements.Clear();
-            Elements.AddRange(dataSensor.GetRange(4, 2));
+            selectRange = dataSensor.GetRange(4, 2);
+            for (var i = 0; i < selectRange.Count; i++)
+                Elements[i] = new Phase(selectRange[i].Status);
         }
 
         private void SettingViewSubmit()

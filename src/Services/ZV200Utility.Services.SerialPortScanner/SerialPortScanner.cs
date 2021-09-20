@@ -2,6 +2,7 @@ using System;
 using System.IO.Ports;
 using System.Linq;
 using System.Management;
+using System.Threading;
 using Microsoft.Extensions.Logging;
 using ZV200Utility.Services.SerialPortScanner.Enums;
 using ZV200Utility.Services.SerialPortScanner.Models;
@@ -12,6 +13,7 @@ namespace ZV200Utility.Services.SerialPortScanner
     public class SerialPortScanner : ISerialPortScanner
     {
         private readonly ILogger _logger;
+        private readonly Timer _timer;
 
         private ManagementEventWatcher _arrival;
         private ManagementEventWatcher _removal;
@@ -24,6 +26,7 @@ namespace ZV200Utility.Services.SerialPortScanner
         public SerialPortScanner(ILogger logger)
         {
             _logger = logger;
+            _timer = new Timer(OnTimer, 0, Timeout.Infinite, Timeout.Infinite);
             _serialPorts = GetAvailableSerialPorts();
 
             MonitoringDeviceChanges();
@@ -33,10 +36,14 @@ namespace ZV200Utility.Services.SerialPortScanner
         public event EventHandler<SerialPortArgs> SerialPortChanged;
 
         /// <inheritdoc />
+        public event EventHandler<string[]> SerialPortPolled;
+
+        /// <inheritdoc />
         public void Start()
         {
             _arrival.Start();
             _removal.Start();
+            _timer.Change(TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(1));
 
             _logger.LogTrace("Остановлено сканирование последовательных портов");
         }
@@ -46,8 +53,14 @@ namespace ZV200Utility.Services.SerialPortScanner
         {
             _arrival.Stop();
             _removal.Stop();
+            _timer.Change(Timeout.Infinite, Timeout.Infinite);
 
             _logger.LogTrace("Запущено сканирование последовательных портов");
+        }
+
+        private void OnTimer(object state)
+        {
+            SerialPortPolled?.Invoke(this, GetAvailableSerialPorts());
         }
 
         private void MonitoringDeviceChanges()
@@ -76,6 +89,9 @@ namespace ZV200Utility.Services.SerialPortScanner
             lock (_serialPorts)
             {
                 var availableSerialPorts = GetAvailableSerialPorts();
+
+                if (!availableSerialPorts.Any())
+                    return;
                 if (_serialPorts.SequenceEqual(availableSerialPorts))
                     return;
 

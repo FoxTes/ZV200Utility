@@ -62,25 +62,11 @@
                                                     <Setter Property="Fill" Value="Green" />
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding Path=Status}" Value="False">
-                                                    <Setter Property="Fill" Value="Red" />
+                                                    <Setter Property="Fill" Value="{DynamicResource SystemControlBackgroundListMediumBrush}" />
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
                                     </Ellipse.Style>
-                                    <Ellipse.Triggers>
-                                        <EventTrigger RoutedEvent="Window.Loaded">
-                                            <BeginStoryboard>
-                                                <Storyboard>
-                                                    <DoubleAnimation
-                                                        BeginTime="0:0:0.2"
-                                                        Duration="0:0:0.8"
-                                                        From="1"
-                                                        Storyboard.TargetProperty="(TextBlock.Opacity)"
-                                                        To="0" />
-                                                </Storyboard>
-                                            </BeginStoryboard>
-                                        </EventTrigger>
-                                    </Ellipse.Triggers>
                                 </Ellipse>
                             </Grid>
                         </Border>
@@ -132,7 +118,7 @@
                                                     <Setter Property="Fill" Value="Green" />
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding Elements[0].Status}" Value="False">
-                                                    <Setter Property="Fill" Value="Red" />
+                                                    <Setter Property="Fill" Value="{DynamicResource SystemControlBackgroundListMediumBrush}" />
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
@@ -157,7 +143,7 @@
                                                     <Setter Property="Fill" Value="Green" />
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding Elements[1].Status}" Value="False">
-                                                    <Setter Property="Fill" Value="Red" />
+                                                    <Setter Property="Fill" Value="{DynamicResource SystemControlBackgroundListMediumBrush}" />
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>

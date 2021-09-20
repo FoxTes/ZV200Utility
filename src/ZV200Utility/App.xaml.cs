@@ -7,6 +7,7 @@ using Microsoft.AppCenter;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Prism.Ioc;
 using Prism.Modularity;
 using Serilog;
@@ -53,13 +54,8 @@ namespace ZV200Utility
             containerRegistry.RegisterSingleton<INavigationJournal, NavigationJournal>();
             containerRegistry.RegisterSingleton<INotification, Notification>();
 
-#if DEBUG
-            containerRegistry.RegisterSingleton<ISerialPortScanner, SerialPortScannerTest>();
-            containerRegistry.RegisterSingleton<IDeviceManager, DeviceManagerTest>();
-#else
             containerRegistry.RegisterSingleton<ISerialPortScanner, SerialPortScanner>();
             containerRegistry.RegisterSingleton<IDeviceManager, DeviceManager>();
-#endif
         }
 
         /// <inheritdoc />

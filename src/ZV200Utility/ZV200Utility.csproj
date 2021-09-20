@@ -1,19 +1,34 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <UseWPF>true</UseWPF>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <OutputType>WinExe</OutputType>
+    <SatelliteResourceLanguages>ru-RU</SatelliteResourceLanguages>
+    
     <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>true</SelfContained>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-    <UseWPF>true</UseWPF>
-    <SatelliteResourceLanguages>ru-RU</SatelliteResourceLanguages>
+    
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>Link</TrimMode>
+    
+    <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
   </PropertyGroup>
-
+  
   <PropertyGroup>
     <CodeAnalysisRuleSet>..\..\stylecop.ruleset</CodeAnalysisRuleSet>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
+
+
+  <ItemGroup>
+    <TrimmerRootAssembly Include="mscorlib" />
+    <TrimmerRootAssembly Include="System.Runtime.InteropServices.WindowsRuntime" />
+    <TrimmerRootAssembly Include="System.Runtime"/>
+    <TrimmerRootAssembly Include="System.Runtime.Extensions"/>
+    <TrimmerRootAssembly Include="System.Diagnostics.Debug"/>
+  </ItemGroup>
   
   <ItemGroup>
     <PackageReference Include="Microsoft.AppCenter.Analytics" Version="4.3.0" />

@@ -226,6 +226,14 @@ namespace ZV200Utility.Modules.Setting.ViewModels
         {
             SelectedIndexTab = default;
             StatusConnectDevice = _deviceManager.StatusConnect == StatusConnect.Connected;
+
+            if (!StatusConnectDevice)
+                return;
+
+            _isSettingDeviceChanged = false;
+            SetDefaultValue();
+            _isSettingChanged = false;
+            _isSettingDeviceChanged = true;
         }
 
         private void SerialPortScannerOnSerialPortChanged(object sender, SerialPortArgs e)

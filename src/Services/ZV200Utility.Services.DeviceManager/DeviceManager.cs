@@ -16,8 +16,6 @@ using ZV200Utility.Services.DeviceManager.Helpers;
 using ZV200Utility.Services.DeviceManager.Model;
 using ZV200Utility.Services.Notification;
 using ZV200Utility.Services.SerialPortScanner;
-using ZV200Utility.Services.SerialPortScanner.Enums;
-using ZV200Utility.Services.SerialPortScanner.Models;
 using static System.IO.Ports.SerialPort;
 
 namespace ZV200Utility.Services.DeviceManager
@@ -33,6 +31,8 @@ namespace ZV200Utility.Services.DeviceManager
 
         private SerialPortAdapter _serialPortAdapter;
         private IModbusSerialMaster _modbusSerialMaster;
+
+        private bool _isConnectAdapter;
 
         /// <summary>
         /// Инициализирует новый экземпляр класса <see cref="DeviceManager"/>.
@@ -54,9 +54,20 @@ namespace ZV200Utility.Services.DeviceManager
             _modbusFactory = new ModbusFactory(logger: new ModbusSerilog(LoggingLevel.Trace, logger));
             _timer = new Timer(OnTimer, 0, Timeout.Infinite, Timeout.Infinite);
 
-            SetDefaultValue();
-            serialPortScanner.SerialPortChanged += OnSerialPortScannerOnSerialPortChanged;
-            serialPortScanner.Start();
+            if (GetPortNames().Any())
+            {
+                SetDefaultValue();
+
+                serialPortScanner.SerialPortPolled += SerialPortScannerOnSerialPortPolled;
+                serialPortScanner.Start();
+            }
+            else
+            {
+                notification.ShowAsync(
+                    "Последовательный порт",
+                    "Внимание!\nПрограмма не обнаружила в система COM порты. Подключение к прибору не будет осуществлено.",
+                    NotificationType.Error);
+            }
         }
 
         /// <inheritdoc />
@@ -95,27 +106,25 @@ namespace ZV200Utility.Services.DeviceManager
                 (ushort)RegisterAddress.SoundFunction,
                 buffer);
 
-            SettingDevice = settingDevice;
+            SettingDevice = new SettingDeviceArgs(
+                settingDevice.RelayFunction,
+                settingDevice.RelayLogic,
+                settingDevice.SoundFunction,
+                settingDevice.InputDiscreteLogic);
         }
 
         private async void OnTimer(object state)
         {
             var buffer = new ushort[6];
-            var isSuccess = false;
 
             try
             {
                 buffer = await _modbusSerialMaster.ReadHoldingRegisterRanges(
                     SettingModbus.AddressDevice, RegisterAddress.BusA, RegisterAddress.InputDiscreteStatus);
-                isSuccess = true;
             }
             catch (TimeoutException)
             {
-                Close();
-                await _notification.ShowAsync(
-                    "Подключение",
-                    "Устройство не отвечает на чтение регистров.",
-                    NotificationType.Warning);
+                _isConnectAdapter = true;
             }
             catch (InvalidOperationException)
             {
@@ -134,9 +143,6 @@ namespace ZV200Utility.Services.DeviceManager
                     NotificationType.Warning);
             }
 
-            if (!isSuccess)
-                return;
-
             var argsList = buffer
                 .Select((x, index) => new SensorInfoArgs(index, x != 0))
                 .ToList();
@@ -148,59 +154,46 @@ namespace ZV200Utility.Services.DeviceManager
             SettingModbus = new SettingModbusArgs(
                 byte.Parse(_configuration["AddressModbusSelected"] ?? "1"),
                 GetPortNames().FirstOrDefault(x => x == _configuration["ComPortSelected"]) ?? GetPortNames().First(),
-                FastEnum.GetValues<BaudRate>()
-                    .FirstOrDefault(x => x.GetEnumMemberValue() == _configuration["BaudRateSelected"]));
+                FastEnum.GetValues<BaudRate>().FirstOrDefault(x =>
+                    x.GetEnumMemberValue() == _configuration["BaudRateSelected"]));
         }
 
-        private async void OnSerialPortScannerOnSerialPortChanged(object sender, SerialPortArgs args)
+        private async void SerialPortScannerOnSerialPortPolled(object sender, string[] args)
         {
-            if (args.SerialPortAction != SerialPortAction.Add || StatusConnect != StatusConnect.Disconnected)
+            if (StatusConnect != StatusConnect.Disconnected)
                 return;
-            if (!args.SerialPorts.Contains(SettingModbus.SerialPort))
+            if (!args.Contains(SettingModbus.SerialPort))
                 return;
 
             try
             {
-                await _notification.ShowAsync(
-                    "Подключение",
-                    "Попытка подключения к прибору.",
-                    NotificationType.Information);
                 await Open();
-                await _notification.ShowAsync(
-                    "Подключение",
-                    "Установлено подключение с прибором.",
-                    NotificationType.Information);
             }
             catch (TimeoutException)
             {
-                Close();
-                await _notification.ShowAsync(
-                    "Подключение",
-                    "Не удалось установить соединение с прибором.\nУстройство не отвечает на чтение регистров.",
-                    NotificationType.Warning);
+                _isConnectAdapter = true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Close();
-                await _notification.ShowAsync(
-                    "Подключение",
-                    $"Не удалось установить соединение с прибором.\n{ex.Message}",
-                    NotificationType.Warning);
             }
         }
 
         private async Task Open()
         {
-            _serialPort.PortName = SettingModbus.SerialPort;
-            _serialPort.BaudRate = int.Parse(SettingModbus.BaudRate.GetEnumMemberValue()!);
-            _serialPort.Open();
-
-            _serialPortAdapter = new SerialPortAdapter(_serialPort)
+            if (!_isConnectAdapter)
             {
-                ReadTimeout = 500,
-                WriteTimeout = 500
-            };
-            _modbusSerialMaster = _modbusFactory.CreateRtuMaster(_serialPortAdapter);
+                _serialPort.PortName = SettingModbus.SerialPort;
+                _serialPort.BaudRate = int.Parse(SettingModbus.BaudRate.GetEnumMemberValue()!);
+                _serialPort.Open();
+
+                _serialPortAdapter = new SerialPortAdapter(_serialPort)
+                {
+                    ReadTimeout = 125,
+                    WriteTimeout = 125
+                };
+                _modbusSerialMaster = _modbusFactory.CreateRtuMaster(_serialPortAdapter);
+            }
 
             await GetSettingDevice();
             StartTimer();
@@ -214,6 +207,7 @@ namespace ZV200Utility.Services.DeviceManager
             _modbusSerialMaster?.Dispose();
             _serialPortAdapter?.Dispose();
             _serialPort.Close();
+            _isConnectAdapter = false;
             StopTimer();
 
             StatusConnect = StatusConnect.Disconnected;

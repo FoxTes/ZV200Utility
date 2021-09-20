@@ -125,7 +125,7 @@
                 </Border>
             </TabItem>
             <TabItem
-                Header="Выход"
+                Header="Звук"
                 IsEnabled="{Binding StatusConnectDevice}"
                 KeyboardNavigation.IsTabStop="False"
                 KeyboardNavigation.TabNavigation="None">

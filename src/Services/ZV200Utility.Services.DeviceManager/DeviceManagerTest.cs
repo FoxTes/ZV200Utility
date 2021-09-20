@@ -112,38 +112,13 @@ namespace ZV200Utility.Services.DeviceManager
 
         private async void OnSerialPortScannerOnSerialPortChanged(object sender, SerialPortArgs args)
         {
-            if (args.SerialPortAction != SerialPortAction.Add || StatusConnect != StatusConnect.Disconnected)
-                return;
-            if (!args.SerialPorts.Contains(SettingModbus.SerialPort))
-                return;
-
             try
             {
-                await _notification.ShowAsync(
-                    "Подключение",
-                    "Попытка подключения к прибору.",
-                    NotificationType.Information);
                 await Open();
-                await _notification.ShowAsync(
-                    "Подключение",
-                    "Установлено подключение с прибором.",
-                    NotificationType.Information);
             }
-            catch (TimeoutException)
+            catch (Exception)
             {
                 Close();
-                await _notification.ShowAsync(
-                    "Подключение",
-                    "Не удалось установить соединение с прибором.\nУстройство не отвечает на чтение регистров.",
-                    NotificationType.Warning);
-            }
-            catch (Exception ex)
-            {
-                Close();
-                await _notification.ShowAsync(
-                    "Подключение",
-                    $"Не удалось установить соединение с прибором.\n{ex.Message}",
-                    NotificationType.Warning);
             }
         }
 

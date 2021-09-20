@@ -23,6 +23,9 @@ namespace ZV200Utility.Services.SerialPortScanner
         public event EventHandler<SerialPortArgs> SerialPortChanged;
 
         /// <inheritdoc />
+        public event EventHandler<string[]> SerialPortPolled;
+
+        /// <inheritdoc />
         public void Start()
         {
             _timer.Change(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(15));
